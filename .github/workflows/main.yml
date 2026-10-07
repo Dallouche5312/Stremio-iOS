@@ -1,0 +1,38 @@
+name: Build Stremio IPA
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4'
+
+      - name: Install Dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm install
+          fi
+
+      - name: Build Xcode Project
+        run: |
+          mkdir -p build
+          xcodebuild -project ios/Stremio-iOS.xcodeproj -scheme Stremio-iOS -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO OBJROOT=$PWD/build SYMROOT=$PWD/build
+
+      - name: Package into IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Release-iphoneos/*.app Payload/
+          zip -r Stremio.ipa Payload
+
+      - name: Upload Finished App
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-rcastriotta-Build
+          path: Stremio.ipa
