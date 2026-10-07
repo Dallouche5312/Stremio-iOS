@@ -14,16 +14,10 @@ jobs:
         with:
           xcode-version: '15.4'
 
-      - name: Install Dependencies
-        run: |
-          if [ -f "package.json" ]; then
-            npm install
-          fi
-
       - name: Build Xcode Project
         run: |
           mkdir -p build
-          xcodebuild -project ios/Stremio-iOS.xcodeproj -scheme Stremio-iOS -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO OBJROOT=$PWD/build SYMROOT=$PWD/build
+          xcodebuild -project Stremio-iOS.xcodeproj -scheme "Stremio iOS" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO OBJROOT=$PWD/build SYMROOT=$PWD/build
 
       - name: Package into IPA
         run: |
